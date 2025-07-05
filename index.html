@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Love Treasure Chest</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Montserrat&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(120deg, #fce4ec 0%, #fffde7 100%);
+    color: #4b3b2b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  h1 {
+    font-family: 'Indie Flower', cursive;
+    font-size: 3rem;
+    margin-bottom: 10px;
+    color: #6d4c41;
+    text-shadow: 1px 1px 3px #fff3e0;
+  }
+
+  .subtitle {
+    font-style: italic;
+    margin-bottom: 40px;
+    color: #5d4037;
+  }
+
+  .day-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(248, 187, 208, 0.6);
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+
+  .day-card:hover {
+    box-shadow: 0 8px 32px rgba(248, 187, 208, 0.8);
+  }
+
+  .day-card div {
+    margin-bottom: 12px;
+  }
+
+  .day-card .title {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .day-card .description {
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* Modal styles */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: #fff8e1;
+    border-radius: 20px;
+    max-width: 700px;
+    width: 90%;
+    padding: 35px 40px 35px 40px;
+    box-shadow: 0 8px 32px rgba(248, 187, 208, 0.25);
+    position: relative;
+    font-size: 1.1rem;
+    color: #5d4037;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .letter-box {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px #f8bbd0;
+    padding: 32px 28px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.15rem;
+    color: #5d4037;
+    position: relative;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .letter-title {
+    font-family: 'Indie Flower', cursive;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    color: #6d4c41;
+  }
+  .letter-message {
+    font-size: 1.2rem;
+    margin-top: 8px;
+    line-height: 1.7;
+    color: #6d4c41;
+    word-break: break-word;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    color: #6d4c41;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .modal-content img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  audio {
+    margin-top: 15px;
+    width: 100%;
+    outline: none;
+  }
+
+  /* Scroll for text content */
+  .modal-text {
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+
+  /* Responsive */
+  @media(max-width: 480px) {
+    .day-card {
+      padding: 24px 20px;
+    }
+    .day-card .title {
+      font-size: 1.5rem;
+    }
+    .day-card .description {
+      font-size: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="passwordOverlay" style="position:fixed;z-index:2000;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(120deg,#fce4ec 0%,#fffde7 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+  <h1 style="font-size:2.5rem;font-weight:700;margin-bottom:18px;text-align:center;">Welcome to Appi's Bday Week <span style='font-size:2.2rem;'>🩷</span></h1>
+  <div style="font-size:1.3rem;margin-bottom:30px;text-align:center;">Please enter the password to unlock your surprises:</div>
+  <input id="passwordInput" type="password" placeholder="Enter password" style="font-size:1.2rem;padding:12px 18px;border-radius:6px;border:1px solid #ccc;outline:none;width:300px;max-width:90vw;margin-bottom:18px;" />
+  <button id="unlockBtn" style="background:#ffb6c1;color:#fff;font-size:1.2rem;padding:10px 38px;border:none;border-radius:10px;cursor:pointer;font-weight:600;transition:background 0.2s;">Unlock</button>
+  <div id="passwordError" style="color:#e53935;margin-top:14px;font-size:1.1rem;display:none;">Incorrect password. Try again!</div>
+</div>
+
+<div id="mainContent" style="display:none;">
+
+<h1>ChinKaru's Memory Chest</h1>
+<div class="subtitle">Open each treasure to reveal a special surprise 💖</div>
+
+<div style="width:100%; max-width:900px; display:flex; flex-direction:column; align-items:center; gap:32px; margin-top:30px;">
+  <div class="day-card" data-id="1" tabindex="0" style="background:#fff; border-radius:20px; box-shadow:0 4px 24px #f8bbd0; padding:36px 32px; width:100%; max-width:600px; text-align:center; cursor:pointer; transition:box-shadow 0.2s;">
+    <div style="font-size:2rem; font-weight:700; margin-bottom:12px;">Day 1</div>
+    <div style="font-size:1.25rem; display:flex; align-items:center; justify-content:center; gap:8px;"><span style="font-size:1.5rem;">🏫</span> The Lab Where My Heart Logged In</div>
+  </div>
+  <div class="day-card" data-id="2" tabindex="0" style="background:#fff; border-radius:20px; box-shadow:0 4px 24px #f8bbd0; padding:36px 32px; width:100%; max-width:600px; text-align:center; cursor:pointer; transition:box-shadow 0.2s;">
+    <div style="font-size:2rem; font-weight:700; margin-bottom:12px;">Day 2</div>
+    <div style="font-size:1.25rem; display:flex; align-items:center; justify-content:center; gap:8px;"><span style="font-size:1.5rem;">📝</span> Our silly words and secret names</div>
+  </div>
+  <div class="day-card" data-id="3" tabindex="0" style="background:#fff; border-radius:20px; box-shadow:0 4px 24px #f8bbd0; padding:36px 32px; width:100%; max-width:600px; text-align:center; cursor:pointer; transition:box-shadow 0.2s;">
+    <div style="font-size:2rem; font-weight:700; margin-bottom:12px;">Day 3</div>
+    <div style="font-size:1.25rem; display:flex; align-items:center; justify-content:center; gap:8px;"><span style="font-size:1.5rem;">📸</span> A memory from our journey</div>
+  </div>
+  <div class="day-card" data-id="4" tabindex="0" style="background:#fff; border-radius:20px; box-shadow:0 4px 24px #f8bbd0; padding:36px 32px; width:100%; max-width:600px; text-align:center; cursor:pointer; transition:box-shadow 0.2s;">
+    <div style="font-size:2rem; font-weight:700; margin-bottom:12px;">Day 4</div>
+    <div style="font-size:1.25rem; display:flex; align-items:center; justify-content:center; gap:8px;"><span style="font-size:1.5rem;">🎤</span> A voice from my heart</div>
+  </div>
+  <div class="day-card" data-id="5" tabindex="0" style="background:#fff; border-radius:20px; box-shadow:0 4px 24px #f8bbd0; padding:36px 32px; width:100%; max-width:600px; text-align:center; cursor:pointer; transition:box-shadow 0.2s;">
+    <div style="font-size:2rem; font-weight:700; margin-bottom:12px;">Day 5</div>
+    <div style="font-size:1.25rem; display:flex; align-items:center; justify-content:center; gap:8px;"><span style="font-size:1.5rem;">🎁</span> A sweet surprise for you</div>
+  </div>
+</div>
+
+<!-- Modal for displaying content -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-content">
+    <span class="close-btn" id="closeBtn" aria-label="Close modal">&times;</span>
+    <div class="letter-box">
+      <div class="letter-title" id="modalTitle"></div>
+      <div class="letter-message" id="modalLetter"></div>
+      <a id="downloadLetter" href="#" download style="margin-top:18px; align-self:flex-end; display:none; background:#f8bbd0; color:#6d4c41; padding:8px 18px; border-radius:8px; text-decoration:none; font-weight:600; font-size:1rem; box-shadow:0 2px 8px #f8bbd066; transition:background 0.2s;">Download Letter</a>
+    </div>
+    <img id="modalImage" alt="" style="display:none;" />
+    <audio id="modalAudio" controls style="display:none;"></audio>
+  </div>
+</div>
+
+<script>
+  const treasures = {
+    1: {
+      title: "Day 1",
+      letter: `That day at the end of Java Lab,everyone was leaving,
+              but my heart had other plans.\n
+              \nI stepped forward, nervous but curious, and simply asked,
+            “Hii...Nim hesar enu👀?”\n It felt as if it was just a question—but somehow,
+that moment became everything.
+Neither of us knew what had begun…
+We didn’t plan it, didn’t rush it.
+We just kept showing up, quietly watering something beautiful,
+until it grew into this❤️.
+The date if i'm not wrong was 7th January 2023.
+That day is one I can never forget —
+because that’s when I unknowingly met the queen of my life🫶🏻.\n 
+` ,
+      image: null,
+      audio: null
+    },
+    2: {
+      title: "Day 2",
+      letter: `To my favorite silly girl,\n\nOur secret names and words are my treasures. Thank you for making every day magical.\n\nForever your silly Kaaru`,
+      image: null,
+      audio: null
+    },
+    3: {
+      title: "Day 3",
+      letter: `Appi,\n\nEvery memory with you is a page in my favorite story. Here's to many more adventures together!\n\nLove,\nKaaru`,
+      image: null,
+      audio: null
+    },
+    4: {
+      title: "Day 4",
+      letter: `My love,\n\nIf my heart could sing, it would sing only for you. Listen closely and you'll hear my love in every note.\n\nYours,\nKaaru`,
+      image: null,
+      audio: null
+    },
+    5: {
+      title: "Day 5",
+      letter: `Surprise!\n\nYou are my sweetest gift. Thank you for being you.\n\nWith hugs,\nKaaru`,
+      image: null,
+      audio: null
+    }
+  };
+
+  const modal = document.getElementById('modal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalLetter = document.getElementById('modalLetter');
+  const modalImage = document.getElementById('modalImage');
+  const modalAudio = document.getElementById('modalAudio');
+  const closeBtn = document.getElementById('closeBtn');
+  const downloadLetter = document.getElementById('downloadLetter');
+
+  function openModal(id) {
+    const treasure = treasures[id];
+    modalTitle.textContent = treasure.title;
+    modalLetter.textContent = treasure.letter;
+
+    // Prepare downloadable letter
+    if (treasure.letter) {
+      const blob = new Blob([treasure.title + "\n\n" + treasure.letter], { type: "text/plain" });
+      downloadLetter.href = URL.createObjectURL(blob);
+      downloadLetter.download = `${treasure.title.replace(/\s+/g, "_")}_Letter.txt`;
+      downloadLetter.style.display = 'inline-block';
+    } else {
+      downloadLetter.style.display = 'none';
+    }
+
+    if (treasure.image) {
+      modalImage.src = treasure.image;
+      modalImage.style.display = 'block';
+    } else {
+      modalImage.style.display = 'none';
+    }
+
+    if (treasure.audio) {
+      modalAudio.src = treasure.audio;
+      modalAudio.style.display = 'block';
+      modalAudio.load();
+    } else {
+      modalAudio.style.display = 'none';
+      modalAudio.src = '';
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+    modalAudio.pause();
+    // Revoke object URL to avoid memory leaks
+    if (downloadLetter.href && downloadLetter.href.startsWith('blob:')) {
+      URL.revokeObjectURL(downloadLetter.href);
+    }
+  }
+
+  document.querySelectorAll('.day-card').forEach(card => {
+    card.addEventListener('click', () => {
+      openModal(card.dataset.id);
+    });
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal(card.dataset.id);
+      }
+    });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+
+  window.addEventListener('click', e => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  window.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.style.display === 'flex') {
+      closeModal();
+    }
+  });
+
+  const passwordOverlay = document.getElementById('passwordOverlay');
+  const mainContent = document.getElementById('mainContent');
+  const passwordInput = document.getElementById('passwordInput');
+  const unlockBtn = document.getElementById('unlockBtn');
+  const passwordError = document.getElementById('passwordError');
+
+  function checkPassword() {
+    if (passwordInput.value === 'Appi@1128') {
+      passwordOverlay.style.display = 'none';
+      mainContent.style.display = '';
+    } else {
+      passwordError.style.display = 'block';
+      passwordInput.value = '';
+      passwordInput.focus();
+    }
+  }
+
+  unlockBtn.addEventListener('click', checkPassword);
+  passwordInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkPassword();
+  });
+
+  // Autofocus input on load
+  window.onload = function() {
+    passwordInput.focus();
+  };
+</script>
+
+</body>
+</html>
